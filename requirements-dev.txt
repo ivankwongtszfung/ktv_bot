@@ -1,0 +1,5 @@
+black
+faker
+flake8
+pytest
+responses
