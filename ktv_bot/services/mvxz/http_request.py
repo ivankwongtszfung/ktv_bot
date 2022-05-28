@@ -1,7 +1,7 @@
 from abc import ABC
+from urllib.parse import urlparse
 
 from decouple import config
-from urllib.parse import urlparse
 
 
 class MvxzRequestor(ABC):
