@@ -1,14 +1,7 @@
-from pytest import mark, fixture
 import responses
-from ktv_bot.services.ctfile.file import CtFile, CtFileObject
+from pytest import fixture
 
-
-@mark.parametrize(
-    ("time", "time_in_min"),
-    [("1 hr 8 min 24 sec", 68), ("2 hr ", 120), ("56 min ", 56), ("24 sec", 1)],
-)
-def test_duration_parse_time(time, time_in_min):
-    assert CtFileObject._parse_duration(time) == time_in_min
+from ktv_bot.services.ctfile.file import CtFile
 
 
 @fixture

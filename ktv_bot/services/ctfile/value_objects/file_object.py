@@ -10,7 +10,7 @@ class CtFileObject:
     chunk: str  # an id used internally to identify the object
     duration_in_min: int
     vip_duration_in_min: int
-    size: str
+    size: float
 
     @classmethod
     def from_json(cls, json: Dict[str, any]):
@@ -22,7 +22,7 @@ class CtFileObject:
             chunk=info["file_chk"],
             duration_in_min=cls._parse_duration(info["free_speed"]),
             vip_duration_in_min=cls._parse_duration(info["vip_speed"]),
-            size=info["file_size"],
+            size=float(info["file_size"].split(" ", 1)[0]),
         )
 
     @staticmethod
