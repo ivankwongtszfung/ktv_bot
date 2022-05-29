@@ -23,17 +23,17 @@ class FakeSongService(SongService):
         super().__init__()
         self.data = data
 
-    def _fetch(self, _: str) -> str:
+    def _fetch(self, _: str, __: int) -> str:
         return self.data
 
 
 def test_parse_html_content(faker, one_record_html):
     fake_song_service = FakeSongService(data=one_record_html)
-    songs = fake_song_service.get_songs(name=faker.pystr())
+    songs = fake_song_service.get_songs(name=faker.pystr(), page=1)
     assert len(songs) == 1
 
 
 def test_parse_html_content_multiple_records(faker, multi_record_html):
     fake_song_service = FakeSongService(data=multi_record_html)
-    songs = fake_song_service.get_songs(name=faker.pystr())
+    songs = fake_song_service.get_songs(name=faker.pystr(), page=1)
     assert len(songs) == 2
