@@ -16,6 +16,10 @@ class MvUrlService(MvxzRequestor):
         html_content = self._fetch(id)
         return self._parse(html_content)
 
+    def get_file_id(self, id: int):
+        mv_url = self.get_mv_url(id)
+        return mv_url.rsplit("/", 1)[-1]
+
     def _fetch(self, id: int) -> str:
         response = requests.get(self.url, headers=self._header(), params={"id": id})
         return response.text.encode("latin1")

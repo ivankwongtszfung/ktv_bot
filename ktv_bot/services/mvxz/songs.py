@@ -38,8 +38,8 @@ class Song:
         return cls(name=name_tr.text, link=anchor["href"], size=int(size_tr.text))
 
     @property
-    def download_url(self) -> str:
-        return MvUrlService().get_mv_url(self.id)
+    def file_id(self) -> str:
+        return MvUrlService().get_file_id(self.id)
 
 
 class SongService(MvxzRequestor):

@@ -32,3 +32,9 @@ def test_get_mv_download_url(faker, mv_record_html):
     fake_song_service = FakeMvService(data=mv_record_html)
     mv = fake_song_service.get_mv_url(id=faker.pyint())
     assert is_absolute(mv)
+
+
+def test_get_file_id(faker, mv_record_html):
+    fake_song_service = FakeMvService(data=mv_record_html)
+    file_id = fake_song_service.get_file_id(id=faker.pyint())
+    assert file_id == "2836101-423334431"
