@@ -14,7 +14,10 @@ class CtFile:
     def get_file(self, fid: str) -> CtFileObject:
         # fid is {user_id}-{file_id}
         response = requests.get(self.api_url, params={"f": fid})
-        return CtFileObject.from_json(response.json())
+        json = response.json()
+        if json["code"] == 404:
+            raise Exception(json["file"]["message"])
+        return CtFileObject.from_json(json["file"])
 
     def get_download_url(self, ctfile_object: CtFileObject) -> str:
         return CtFileDownloadUrl().get_url(ctfile_object)

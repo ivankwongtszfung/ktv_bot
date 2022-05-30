@@ -1,5 +1,5 @@
 import responses
-from pytest import fixture
+from pytest import fixture, raises
 
 from ktv_bot.services.ctfile.file import CtFile
 
@@ -35,8 +35,20 @@ def api_response(faker, name):
     }
 
 
+@fixture
+def not_found_response():
+    return {"code": 404, "message": "The share does not exist or has expired."}
+
+
 @responses.activate
-def test__from_json_return_object(api_url, api_response, fid, name):
+def test__get_file_return_object(api_url, api_response, fid, name):
     responses.add(responses.GET, api_url, json=api_response)
     file_object = CtFile(api_url=api_url).get_file(fid)
     assert file_object.name == name
+
+
+@responses.activate
+def test__get_file_raise_not_found_exception(api_url, not_found_response, fid, name):
+    responses.add(responses.GET, api_url, json=not_found_response)
+    with raises(Exception):
+        CtFile(api_url=api_url).get_file(fid)

@@ -13,8 +13,7 @@ class CtFileObject:
     size: float
 
     @classmethod
-    def from_json(cls, json: Dict[str, any]):
-        info = json["file"]
+    def from_json(cls, info: Dict[str, any]):
         return cls(
             id=info["file_id"],
             name=info["file_name"],
