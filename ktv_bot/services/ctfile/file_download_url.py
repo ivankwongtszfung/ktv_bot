@@ -17,9 +17,10 @@ class CtFileDownloadUrl:
     @staticmethod
     def _create_payload(file_obj: CtFileObject):
         return {
+            "uid": file_obj.user_id,
             "fid": file_obj.id,
             "file_chk": file_obj.chunk,
             "mb": 0,
             "app": 0,
-            "acheck": 0,
+            "acheck": 2,
         }
