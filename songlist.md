@@ -1,0 +1,1 @@
+macroon 5, 周杰伦, 五月天, 台湾热唱榜, 香港热唱榜, 林家谦, 王心宁, yoasobi, taylor swift, justin bieber, AGA, chicken attack , 超跑, lolipop, avril lavigne, GEM, 容祖儿, Tonick, 周国贤, C ALLSTAR, my little airport, rubberband, 陈卓贤, 吕爵安,
