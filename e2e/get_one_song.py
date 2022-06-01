@@ -1,4 +1,6 @@
 import logging
+import os
+import sys
 from pathlib import Path
 from typing import List
 from urllib.request import urlretrieve
@@ -24,6 +26,10 @@ def get_download_filepath(song: Song) -> Path:
     return download_path / f"{song.name}.mkv"
 
 
+def get_tmp_download_filepath(song: Song) -> Path:
+    return download_path / f"tmp_{song.name}.mkv"
+
+
 def download_file(song):
     filepath = get_download_filepath(song)
     if filepath.is_file():
@@ -34,8 +40,12 @@ def download_file(song):
     with TqdmUpTo(
         unit="B", unit_scale=True, unit_divisor=1024, miniters=1, desc=song.name
     ) as t:
-        urlretrieve(download_url, filename=filepath, reporthook=t.update_to, data=None)
+        tmp_filepath = get_tmp_download_filepath(song)
+        urlretrieve(
+            download_url, filename=tmp_filepath, reporthook=t.update_to, data=None
+        )
         t.total = t.n
+    os.rename(tmp_filepath, filepath)
 
 
 def download_all_results(keyword, page):
@@ -45,12 +55,12 @@ def download_all_results(keyword, page):
             download_file(song)
         except Exception:
             logging.exception(f"Error occurred while downloading {song.name}")
-            get_download_filepath(song).unlink(missing_ok=True)
+            get_tmp_download_filepath(song).unlink(missing_ok=True)
     else:
         if songs:
             download_all_results(keyword, page + 1)
 
 
 if __name__ == "__main__":
-    keyword = "taylor swift"
+    keyword = sys.argv[1]
     download_all_results(keyword, page=1)

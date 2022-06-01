@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from functools import cached_property
 from urllib.parse import parse_qs, urljoin, urlparse
 
 import requests
@@ -24,12 +25,13 @@ class Song:
     size: float
     id: int = field(init=False)
 
-    def __post_init__(self):
+    def __post_init__(self, **kwargs):
         self.link = (
             urljoin(MVXZ_URL, self.link) if not is_absolute(self.link) else self.link
         )
         url = urlparse(self.link)
         self.id = parse_qs(url.query)["id"][0]
+        self._mv_url_service = kwargs.get("mv_url_service") or MvUrlService()
 
     @classmethod
     def from_bs(cls, row: ResultSet):
@@ -37,9 +39,20 @@ class Song:
         anchor = name_tr.find("a")
         return cls(name=name_tr.text, link=anchor["href"], size=int(size_tr.text))
 
-    @property
+    @cached_property
     def file_id(self) -> str:
-        return MvUrlService().get_file_id(self.id)
+        return self._mv_url_service.get_file_id(self.id)
+
+    @cached_property
+    def file_url(self) -> str:
+        return self._mv_url_service.get_mv_url(self.id)
+
+    @cached_property
+    def url_path(self) -> str:
+        return self._mv_url_service.get_path(self.id)
+
+    def __str__(self):
+        return f"{self.name} {self.file_url} {self.url_path}"
 
 
 class SongService(MvxzRequestor):
