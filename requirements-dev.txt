@@ -1,5 +1,6 @@
 black
 faker
 flake8
+ipython
 pytest
 responses
