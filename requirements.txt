@@ -1,6 +1,4 @@
 bs4
-numpy
-pandas
 python-decouple
 requests
 requests_html
