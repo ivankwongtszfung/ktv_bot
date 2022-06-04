@@ -1,6 +1,9 @@
+from urllib.parse import urlparse
+
 import requests
 from bs4 import BeautifulSoup, ResultSet
 from decouple import config
+from methodtools import lru_cache
 
 from ktv_bot.services.mvxz.http_request import MvxzRequestor
 
@@ -12,13 +15,23 @@ class MvUrlService(MvxzRequestor):
     def __init__(self):
         self.url = MVXZ_MV_URL
 
+    @lru_cache(maxsize=None)
     def get_mv_url(self, id: int):
         html_content = self._fetch(id)
         return self._parse(html_content)
 
     def get_file_id(self, id: int):
+        path = self._get_stripped_mv_path(id)
+        return path.rsplit("/", 1)[-1]
+
+    def get_path(self, id: int):
+        path = self._get_stripped_mv_path(id)
+        return path.rsplit("/", 2)[-2]
+
+    def _get_stripped_mv_path(self, id: int):
         mv_url = self.get_mv_url(id)
-        return mv_url.rsplit("/", 1)[-1]
+        parsed_url = urlparse(mv_url)
+        return parsed_url.path.strip("/")  # path: /some/where.html
 
     def _fetch(self, id: int) -> str:
         response = requests.get(self.url, headers=self._header(), params={"id": id})

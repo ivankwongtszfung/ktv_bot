@@ -1,4 +1,5 @@
 bs4
+methodtools
 python-decouple
 requests
 requests_html

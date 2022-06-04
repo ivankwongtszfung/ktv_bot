@@ -36,7 +36,7 @@ def download_file(song):
     if filepath.is_file():
         print(f"{song.name} already exists, now skipping...")
         return
-    file = ctfile_service.get_file(song.file_id)
+    file = ctfile_service.get_file(song)
     download_url = ctfile_service.get_download_url(file)
     with TqdmUpTo(
         unit="B", unit_scale=True, unit_divisor=1024, miniters=1, desc=song.name
