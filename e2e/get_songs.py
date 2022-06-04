@@ -1,18 +1,19 @@
 import logging
-import os
+import shutil
 import sys
 from pathlib import Path
 from typing import List
 from urllib.request import urlretrieve
 
+from tqdm import tqdm
+
 from ktv_bot.services.ctfile.file import CtFile, CtFileObject
 from ktv_bot.services.mvxz.songs import Song, SongService
-from tqdm import tqdm
 
 song_service = SongService()
 ctfile_service = CtFile()
-current_path = Path().resolve()
-download_path = current_path / "downloads"
+download_path = Path("/mnt/c/Users/invok/Desktop/KTV/").resolve()
+temp_path = Path().resolve() / "temp"
 
 
 class TqdmUpTo(tqdm):
@@ -27,7 +28,7 @@ def get_download_filepath(song: Song) -> Path:
 
 
 def get_tmp_download_filepath(song: Song) -> Path:
-    return download_path / f"tmp_{song.name}.mkv"
+    return temp_path / f"{song.name}.mkv"
 
 
 def download_file(song):
@@ -45,7 +46,11 @@ def download_file(song):
             download_url, filename=tmp_filepath, reporthook=t.update_to, data=None
         )
         t.total = t.n
-    os.rename(tmp_filepath, filepath)
+    move_file_to_download_folder(tmp_filepath)
+
+
+def move_file_to_download_folder(tmp_path: Path):
+    shutil.move(str(tmp_path), str(download_path))
 
 
 def download_all_results(keyword, page):
@@ -63,4 +68,7 @@ def download_all_results(keyword, page):
 
 if __name__ == "__main__":
     keyword = sys.argv[1]
+    shutil.rmtree(str(temp_path), ignore_errors=True)
+    temp_path.mkdir(exist_ok=True)
+    download_path.mkdir(exist_ok=True)
     download_all_results(keyword, page=1)
