@@ -10,6 +10,7 @@ from typing import List, Union
 from urllib.request import urlretrieve
 
 import typer
+import socket
 from tqdm import tqdm
 
 from ktv_bot.services.ctfile.file import CtFile
@@ -23,6 +24,7 @@ download_path = Path("/mnt/c/Users/invok/Desktop/KTV/").resolve()
 loaded_paths = [download_path, download_path / "Loaded", download_path / "Loaded 2"]
 temp_path = Path().resolve() / "temp"
 DOWNLOAD_BATCH_SIZE = 5
+socket.setdefaulttimeout(60 * 5)
 
 
 class TqdmUpTo(tqdm):
@@ -88,6 +90,9 @@ def download_all_results(keyword: str, page: int, dfs: bool = True) -> int:
             logging.info(song)
             download_file(song)
             no_of_songs += 1
+        except socket.timeout as se:
+            logging.exception(f"Socket timeout")
+            get_tmp_download_filepath(song).unlink(missing_ok=True)
         except Exception:
             logging.exception(f"Error occurred while downloading {song.name}")
             get_tmp_download_filepath(song).unlink(missing_ok=True)
