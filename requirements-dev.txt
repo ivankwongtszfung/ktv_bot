@@ -3,4 +3,5 @@ faker
 flake8
 ipython
 pytest
+pytest-mock
 responses

@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
 from functools import cached_property
+from typing import Optional
 from urllib.parse import parse_qs, urljoin, urlparse
 
 import requests
@@ -24,14 +25,15 @@ class Song:
     link: str
     size: float
     id: int = field(init=False)
+    _mv_url_service: Optional[MvUrlService] = None
 
-    def __post_init__(self, **kwargs):
+    def __post_init__(self):
         self.link = (
             urljoin(MVXZ_URL, self.link) if not is_absolute(self.link) else self.link
         )
         url = urlparse(self.link)
         self.id = parse_qs(url.query)["id"][0]
-        self._mv_url_service = kwargs.get("mv_url_service") or MvUrlService()
+        self._mv_url_service = self._mv_url_service or MvUrlService()
 
     @classmethod
     def from_bs(cls, row: ResultSet):

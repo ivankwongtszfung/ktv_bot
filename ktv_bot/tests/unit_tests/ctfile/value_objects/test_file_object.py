@@ -38,6 +38,6 @@ def test_duration_parse_time(time, time_in_min):
 
 
 def test_from_json_works(json_response, duration, file_size):
-    file_info = CtFileObject.from_json(json_response)
+    file_info = CtFileObject.from_json(json_response["file"])
     assert file_info.duration_in_min == duration
     assert file_info.size == file_size
