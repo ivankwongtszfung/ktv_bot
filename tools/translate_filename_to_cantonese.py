@@ -38,7 +38,7 @@ def get_filename(file: Path):
 
 def translate_filename_to_cantonese():
     for file in get_all_file():
-        filename = file.name
+        filename = get_filename(file.name)
         folder = file.parent.resolve()
         canto_filename = translate_to_cantonese(filename)
         # os.rename(str(file), str(folder / canto_filename))
