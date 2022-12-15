@@ -36,16 +36,10 @@ def get_all_file() -> List[Path]:
     ]
 
 
-def get_filename(file: Path):
-    name, _ = os.path.splitext(file.name)
-    return name[: -len(KTV_SUFFIX)] if name.endswith(KTV_SUFFIX) else name
-
-
 def translate_filename_to_cantonese():
     for file in get_all_file():
-        filename = get_filename(file)
         folder = file.parent.resolve()
-        canto_filename = translate_to_cantonese(filename)
+        canto_filename = translate_to_cantonese(file.name)
         os.rename(str(file), str(folder / canto_filename))
 
 
