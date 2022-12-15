@@ -25,6 +25,7 @@ class Song:
     link: str
     size: float
     id: int = field(init=False)
+    is_downloaded: bool = False
     _mv_url_service: Optional[MvUrlService] = None
 
     def __post_init__(self):
@@ -34,6 +35,9 @@ class Song:
         url = urlparse(self.link)
         self.id = parse_qs(url.query)["id"][0]
         self._mv_url_service = self._mv_url_service or MvUrlService()
+
+    def mark_downloaded(self):
+        self.is_downloaded = True
 
     @classmethod
     def from_bs(cls, row: ResultSet):
