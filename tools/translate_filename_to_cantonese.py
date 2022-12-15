@@ -3,13 +3,16 @@ from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Dict, List
 
+from decouple import config
 from opencc import OpenCC
 
 cc = OpenCC("s2t")
 
-KTV_FOLDER = Path("C:/Users/invok/Desktop/KTV")
+LOCAL_FOLDER = config("SONG_LOCAL_PATH")
+KTV_FOLDER = Path(LOCAL_FOLDER)
 KTV_SUFFIX = "_[MVXZ.com]_MV下载王"
 KTV_FOLDERS = [KTV_FOLDER, KTV_FOLDER / "Loaded", KTV_FOLDER / "Loaded 2"]
+KTV_FOLDERS = [folder for folder in KTV_FOLDERS if folder.exists()]
 
 
 def translate_to_cantonese(to_convert: str) -> str:
@@ -19,6 +22,8 @@ def translate_to_cantonese(to_convert: str) -> str:
 def get_file_mapping() -> Dict[str, List[Path]]:
     filename_mapping = defaultdict(lambda: [])
     for folder in KTV_FOLDERS:
+        if not folder.exists():
+            continue
         for file in folder.iterdir():
             if file.is_file():
                 filename_mapping[get_filename(file)].append(file)
@@ -38,10 +43,10 @@ def get_filename(file: Path):
 
 def translate_filename_to_cantonese():
     for file in get_all_file():
-        filename = get_filename(file.name)
+        filename = get_filename(file)
         folder = file.parent.resolve()
         canto_filename = translate_to_cantonese(filename)
-        # os.rename(str(file), str(folder / canto_filename))
+        os.rename(str(file), str(folder / canto_filename))
 
 
 def remove_duplicate_files():
