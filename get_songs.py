@@ -4,7 +4,6 @@ import logging
 import shutil
 from collections import deque
 from dataclasses import dataclass, field
-from functools import cached_property
 from pathlib import Path
 from typing import List, Union
 from urllib.request import urlretrieve
@@ -107,7 +106,6 @@ def download_all_songs(songs: List[Song]) -> int:
 
 def setup_folder():
     shutil.rmtree(str(temp_path), ignore_errors=True)
-    breakpoint()
     temp_path.mkdir(exist_ok=True)
     download_path.mkdir(exist_ok=True)
 
@@ -119,12 +117,7 @@ class SongResult:
     current: int = 0
     songs: List[Song] = field(default_factory=list)
 
-    # The song result of a keyword
-    # we can get the top x undownloaded songs
-    #  maintain a queue of songs, we fetch songs if it less than 5
-
     def get_songs(self, number_of_songs: int):
-        # return self.songs[self.current : self.current + number_of_songs]
         page = self.page
         self.songs = [song for song in self.songs if not song.is_downloaded]
         while len(self.songs) < number_of_songs:

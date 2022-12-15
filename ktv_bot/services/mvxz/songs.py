@@ -7,6 +7,7 @@ import requests
 from bs4 import BeautifulSoup, ResultSet
 from decouple import config
 
+from ktv_bot.helper import t2s, s2t
 from ktv_bot.services.mvxz.http_request import MvxzRequestor
 from ktv_bot.services.mvxz.mv_url import MvUrlService
 
@@ -21,7 +22,7 @@ def is_absolute(url):
 
 @dataclass
 class Song:
-    name: str
+    _name: str
     link: str
     size: float
     id: int = field(init=False)
@@ -39,11 +40,16 @@ class Song:
     def mark_downloaded(self):
         self.is_downloaded = True
 
+    @property
+    def name(self) -> str:
+        return self._name
+        return s2t.convert(self._name)
+
     @classmethod
     def from_bs(cls, row: ResultSet):
         _, name_tr, size_tr, *_ = [data for data in row if data.text.strip()]
         anchor = name_tr.find("a")
-        return cls(name=name_tr.text, link=anchor["href"], size=int(size_tr.text))
+        return cls(_name=name_tr.text, link=anchor["href"], size=int(size_tr.text))
 
     @cached_property
     def file_id(self) -> str:
@@ -66,6 +72,7 @@ class SongService(MvxzRequestor):
         self.url = MVXZ_SEARCH_URL
 
     def get_songs(self, name: str, page: int):
+        name = t2s.convert(name)
         html_content = self._fetch(name, page)
         rows = self._parse(html_content)
         return [Song.from_bs(row) for row in rows]
