@@ -121,16 +121,15 @@ class SongResult:
         page = self.page
         self.songs = [song for song in self.songs if not song.is_downloaded]
         while len(self.songs) < number_of_songs:
-            self.songs.extend(self.get_undownloaded_song_by_page(page))
+            songs = self.get_song_by_page(page)
+            if len(songs) == 0:  # no more songs
+                return []
+            self.songs.extend([song for song in songs if not is_downloaded(song)])
             page += 1
         return self.songs[:5]
 
-    def get_undownloaded_song_by_page(self, page):
-        return [
-            song
-            for song in song_service.get_songs(self.keyword, page)
-            if not is_downloaded(song)
-        ]
+    def get_song_by_page(self, page):
+        return song_service.get_songs(self.keyword, page)
 
 
 def main(keywords: List[str]):  # , dfs: bool = typer.Option(True, "--dfs/--bfs")):
@@ -139,7 +138,10 @@ def main(keywords: List[str]):  # , dfs: bool = typer.Option(True, "--dfs/--bfs"
     try:
         while keyword_queue:
             song_result = keyword_queue.popleft()
-            download_all_songs(song_result.get_songs(DOWNLOAD_BATCH_SIZE))
+            songs = song_result.get_songs(DOWNLOAD_BATCH_SIZE)
+            if not songs:
+                continue
+            download_all_songs(songs)
             keyword_queue.append(song_result)
     except Exception:
         logging.exception(f"unexpected error")

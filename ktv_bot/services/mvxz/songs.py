@@ -42,7 +42,6 @@ class Song:
 
     @property
     def name(self) -> str:
-        return self._name
         return s2t.convert(self._name)
 
     @classmethod
