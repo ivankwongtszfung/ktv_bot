@@ -82,7 +82,7 @@ def download_file(song):
 
 
 def move_file_to_download_folder(tmp_path: Path):
-    shutil.move(str(tmp_path), str(download_path))
+    os.system(f"sudo mv {str(tmp_path)} {str(download_path)}")
 
 
 def download_all_songs(songs: List[Song]) -> int:
@@ -98,9 +98,11 @@ def download_all_songs(songs: List[Song]) -> int:
         try:
             logging.info(song)
             download_file(song)
-        except Exception:
+        except Exception as e:
             logging.exception(f"Error occurred while downloading {song.name}")
-            get_tmp_download_filepath(song).unlink(missing_ok=True)
+            deleted_path = get_tmp_download_filepath(song)
+            if deleted_path.is_file(): os.system(f"sudo rm {deleted_path.resolve()}")
+            raise e
     return
 
 
@@ -145,6 +147,7 @@ def main(keywords: List[str]):  # , dfs: bool = typer.Option(True, "--dfs/--bfs"
             keyword_queue.append(song_result)
     except Exception:
         logging.exception(f"unexpected error")
+        raise e
 
 
 if __name__ == "__main__":

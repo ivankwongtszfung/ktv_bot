@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
-from functools import cached_property
 from typing import Optional
 from urllib.parse import parse_qs, urljoin, urlparse
+import functools
 
 import requests
 from bs4 import BeautifulSoup, ResultSet
@@ -50,15 +50,15 @@ class Song:
         anchor = name_tr.find("a")
         return cls(_name=name_tr.text, link=anchor["href"], size=int(size_tr.text))
 
-    @cached_property
+    @property
     def file_id(self) -> str:
         return self._mv_url_service.get_file_id(self.id)
 
-    @cached_property
+    @property
     def file_url(self) -> str:
         return self._mv_url_service.get_mv_url(self.id)
 
-    @cached_property
+    @property
     def url_path(self) -> str:
         return self._mv_url_service.get_path(self.id)
 
