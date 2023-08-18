@@ -1,3 +1,5 @@
+from urllib.parse import urljoin
+
 import requests
 from decouple import config
 
@@ -5,7 +7,7 @@ from ktv_bot.services.ctfile.file_download_url import CtFileDownloadUrl
 from ktv_bot.services.ctfile.value_objects.file_object import CtFileObject
 from ktv_bot.services.mvxz.songs import Song
 
-FILE_INFO_URL = f"{config('CTFILE_URL')}/getfile.php"
+FILE_INFO_URL = urljoin(config('CTFILE_URL'), "getfile.php")
 
 
 class CtFile:

@@ -1,8 +1,7 @@
 from dataclasses import dataclass, field
 from functools import cached_property
-from typing import Optional
+from typing import List, Optional
 from urllib.parse import parse_qs, urljoin, urlparse
-
 import requests
 from bs4 import BeautifulSoup, ResultSet
 from decouple import config
@@ -12,8 +11,8 @@ from ktv_bot.services.mvxz.http_request import MvxzRequestor
 from ktv_bot.services.mvxz.mv_url import MvUrlService
 
 MVXZ_URL = config("MVXZ_URL")
-MVXZ_SEARCH_URL = f"{MVXZ_URL}/isearch.asp"
-MVXZ_MV_URL = f"{MVXZ_URL}/imv.asp"
+MVXZ_SEARCH_URL = urljoin(MVXZ_URL, "isearch.asp")
+MVXZ_MV_URL = urljoin(MVXZ_URL, "imv.asp")
 
 
 def is_absolute(url):
@@ -70,17 +69,18 @@ class SongService(MvxzRequestor):
     def __init__(self):
         self.url = MVXZ_SEARCH_URL
 
-    def get_songs(self, name: str, page: int):
+    def get_songs(self, name: str, page: int) -> List[Song]:
         name = t2s.convert(name)
         html_content = self._fetch(name, page)
+        breakpoint()
         rows = self._parse(html_content)
         return [Song.from_bs(row) for row in rows]
 
     def _fetch(self, name: str, page: int) -> str:
-        response = requests.post(
+        response = requests.get(
             self.url,
             headers=self._header(),
-            data={"ktv": name, "page": page, "type": 3},
+            params={"ktv": name, "page": page, "type": 3},
         )
         return response.text.encode("latin1")
 

@@ -1,1 +1,2 @@
-"五月天" "吕爵安" "周国贤" "方皓玟" "周杰伦" "孙燕姿" "张天赋" "张敬轩" "李圣杰" "林家谦" "超跑情人梦" "邓紫棋" "陈卓贤" "陈奕迅" "AGA" "C ALLSTAR" "F.I.R" "Maroon 5" "Tonick" "avril lavigne" "chicken attack" "justin bieber" "lolipop" "my little airport" "rubberband" "taylor swift" "yoasobi" "王心宁" "范逸臣" "林俊杰" "茄子蛋" "江海迦"
+ "馮允謙"  "Yuuri" "林俊杰" "陈奕迅" "yoasobi" "张天赋" "张敬轩" "冯允谦" "吕爵安" "周国贤" "方皓玟" "五月天" "周杰伦" "洪嘉豪" "陳健安" "陳蕾" "dear jane" "林家谦"  "陈卓贤" "AGA" "C ALLSTAR" "Maroon 5" "Tonick" "avril lavigne"  "justin bieber" "my little airport" "rubberband" "taylor swift" "yoasobi" "江海迦" "陳卓賢" "李圣杰" "冯允谦" "吕爵安" "周国贤" "邓紫棋" "范逸臣" "茄子蛋"
+

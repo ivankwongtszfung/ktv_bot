@@ -19,7 +19,7 @@ from ktv_bot.services.mvxz.songs import Song, SongService
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)  # or whatever
 handler = logging.FileHandler("test.log", "w", "utf-8")  # or whatever
-handler.setFormatter(logging.Formatter("%(name)s %(message)s"))  # or whatever
+handler.setFormatter(logging.Formatter("%(asctime)s %(name)s %(message)s"))  # or whatever
 logger.addHandler(handler)
 
 song_service = SongService()
@@ -84,24 +84,28 @@ def download_file(song):
 def move_file_to_download_folder(tmp_path: Path):
     shutil.move(str(tmp_path), str(download_path))
 
+def download_song(song: Song):
+    try:
+        logging.info(song)
+        download_file(song)
+        return True
+    except Exception:
+        logging.exception(f"Error occurred while downloading {song.name}")
+        get_tmp_download_filepath(song).unlink(missing_ok=True)
+        return False
 
-def download_all_songs(songs: List[Song]) -> int:
+
+
+def download_all_songs(songs: List[Song]):
     """download all the songs provided
 
     Args:
         songs (List[Song]): songs from mvxz
 
     Returns:
-        int: number of songs download
     """
     for song in songs:
-        try:
-            logging.info(song)
-            download_file(song)
-        except Exception:
-            logging.exception(f"Error occurred while downloading {song.name}")
-            get_tmp_download_filepath(song).unlink(missing_ok=True)
-    return
+        download_song(song)
 
 
 def setup_folder():
@@ -114,38 +118,46 @@ def setup_folder():
 class SongResult:
     keyword: str
     page: int = 1
-    current: int = 0
-    songs: List[Song] = field(default_factory=list)
+    song_queue: List[Song] = field(default_factory=deque)
 
-    def get_songs(self, number_of_songs: int):
-        page = self.page
-        self.songs = [song for song in self.songs if not song.is_downloaded]
-        while len(self.songs) < number_of_songs:
-            songs = self.get_song_by_page(page)
-            if len(songs) == 0:  # no more songs
-                return []
-            self.songs.extend([song for song in songs if not is_downloaded(song)])
-            page += 1
-        return self.songs[:5]
+    def process_top_x(self, number_of_songs:int = DOWNLOAD_BATCH_SIZE):
+        count = 0
+        while count < DOWNLOAD_BATCH_SIZE:
+            if len(self.song_queue) < DOWNLOAD_BATCH_SIZE:
+                self.page += 1
+                self.get_song_by_page()
+            breakpoint()
+            song = self.song_queue.popleft()
+            if not is_downloaded(song):
+                continue
+            elif download_song(song):
+                count += 1
+            else:
+                self.song_queue.append(song)
 
-    def get_song_by_page(self, page):
-        return song_service.get_songs(self.keyword, page)
+
+    def get_song_by_page(self):
+        breakpoint()
+        songs = song_service.get_songs(self.keyword, self.page)
+        self.song_queue.extend(songs)
 
 
 def main(keywords: List[str]):  # , dfs: bool = typer.Option(True, "--dfs/--bfs")):
     setup_folder()
     keyword_queue = deque(SongResult(keyword) for keyword in keywords)
-    try:
-        while keyword_queue:
-            song_result = keyword_queue.popleft()
-            songs = song_result.get_songs(DOWNLOAD_BATCH_SIZE)
-            if not songs:
-                continue
-            download_all_songs(songs)
-            keyword_queue.append(song_result)
-    except Exception:
-        logging.exception(f"unexpected error")
+    # try:
+    #     while keyword_queue:
+    #         song_result = keyword_queue.popleft()
+    #         songs = song_result.process_top_x()
+    #         keyword_queue.append(song_result)
+    # except Exception:
+    #     logging.exception(f"unexpected error")
+    while keyword_queue:
+        song_result = keyword_queue.popleft()
+        songs = song_result.process_top_x()
+        keyword_queue.append(song_result)
 
 
 if __name__ == "__main__":
     typer.run(main)
+

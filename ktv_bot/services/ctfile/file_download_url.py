@@ -1,9 +1,11 @@
+from urllib.parse import urljoin
+
 import requests
 from decouple import config
 
 from ktv_bot.services.ctfile.value_objects import CtFileObject
 
-FILE_DOWNLOAD_URL = f"{config('CTFILE_URL')}/get_file_url.php"
+FILE_DOWNLOAD_URL = urljoin(config('CTFILE_URL'), "get_file_url.php")
 
 
 class CtFileDownloadUrl:

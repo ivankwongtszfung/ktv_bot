@@ -15,7 +15,7 @@ def mv_url_service(mocker, faker):
 @fixture
 def song(faker, mv_url_service):
     return Song(
-        name=faker.pystr(),
+        _name=faker.pystr(),
         link="link/?id=1",
         size=faker.pyfloat(),
         _mv_url_service=mv_url_service,

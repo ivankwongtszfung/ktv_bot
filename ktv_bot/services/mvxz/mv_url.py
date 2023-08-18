@@ -1,4 +1,4 @@
-from urllib.parse import urlparse
+from urllib.parse import urljoin, urlparse
 
 import requests
 from bs4 import BeautifulSoup, ResultSet
@@ -7,8 +7,7 @@ from methodtools import lru_cache
 
 from ktv_bot.services.mvxz.http_request import MvxzRequestor
 
-MVXZ_URL = config("MVXZ_URL")
-MVXZ_MV_URL = f"{MVXZ_URL}/imv.asp"
+MVXZ_MV_URL = urljoin(config("MVXZ_URL"), "imv.asp")
 
 
 class MvUrlService(MvxzRequestor):
