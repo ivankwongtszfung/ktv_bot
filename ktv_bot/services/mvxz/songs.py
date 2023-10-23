@@ -61,6 +61,9 @@ class Song:
     def url_path(self) -> str:
         return self._mv_url_service.get_path(self.id)
 
+    def __repr__(self):
+        return f"{self.name}"
+
     def __str__(self):
         return f"{self.name} {self.file_url} {self.url_path}"
 
@@ -68,16 +71,16 @@ class Song:
 class SongService(MvxzRequestor):
     def __init__(self):
         self.url = MVXZ_SEARCH_URL
+        self.session = requests.Session()
 
     def get_songs(self, name: str, page: int) -> List[Song]:
         name = t2s.convert(name)
         html_content = self._fetch(name, page)
-        breakpoint()
         rows = self._parse(html_content)
         return [Song.from_bs(row) for row in rows]
 
     def _fetch(self, name: str, page: int) -> str:
-        response = requests.get(
+        response = self.session.get(
             self.url,
             headers=self._header(),
             params={"ktv": name, "page": page, "type": 3},

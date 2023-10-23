@@ -7,12 +7,16 @@ from ktv_bot.services.ctfile.file_download_url import CtFileDownloadUrl
 from ktv_bot.services.ctfile.value_objects.file_object import CtFileObject
 from ktv_bot.services.mvxz.songs import Song
 
-FILE_INFO_URL = urljoin(config('CTFILE_URL'), "getfile.php")
+FILE_INFO_URL = urljoin(config("CTFILE_URL"), "getfile.php")
 
 
 class CtFile:
     def __init__(self, **kwargs):
         self.api_url = kwargs.get("api_url") or FILE_INFO_URL
+
+    def get_url_from_song(self, song: Song) -> str:
+        file = self.get_file(song)
+        return self.get_download_url(file)
 
     def get_file(self, song: Song) -> CtFileObject:
         # fid is {user_id}-{file_id}
@@ -22,8 +26,12 @@ class CtFile:
             headers={"Referer": song.file_url},
         )
         json = response.json()
-        if json["code"] == 404:
-            raise Exception(json["file"]["message"])
+        if json["code"] > 400:
+            try:
+                raise Exception(json["file"]["message"])
+            except:
+                raise Exception("Error when fetching download url information")
+
         return CtFileObject.from_json(json["file"])
 
     def get_download_url(self, ctfile_object: CtFileObject) -> str:

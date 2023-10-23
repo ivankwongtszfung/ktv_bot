@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from urllib.parse import urljoin, urlparse
 
 import requests
@@ -10,6 +11,13 @@ from ktv_bot.services.mvxz.http_request import MvxzRequestor
 MVXZ_MV_URL = urljoin(config("MVXZ_URL"), "imv.asp")
 
 
+@dataclass
+class MvPath:
+    url: str
+    file_id: str
+    user_id: str
+
+
 class MvUrlService(MvxzRequestor):
     def __init__(self):
         self.url = MVXZ_MV_URL
@@ -20,6 +28,7 @@ class MvUrlService(MvxzRequestor):
         return self._parse(html_content)
 
     def get_file_id(self, id: int):
+        # /{source}/{user_id}-{file_id}
         path = self._get_stripped_mv_path(id)
         return path.rsplit("/", 1)[-1]
 

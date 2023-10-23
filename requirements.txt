@@ -6,3 +6,4 @@ requests
 requests_html
 typer
 selenium
+python-json-logger
